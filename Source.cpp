@@ -49,28 +49,55 @@ void mov(char a, int b) {
 
 
 
-void inv(char* a, char* b) {
-    //зрівнять їх по довжині
+void inv(char a, char b) {
 
-    bool even = !(bool)b[bits - 1];
+    int* first = (a == '1') ? &R1 : &R2;
+    int* second = (b == '1') ? &R1 : &R2;
+    int res = 0;
+
+
+    bool even = !(*second & 1);
 
     for (int i = 0; i < bits; ++i) {
-        bool sum = !a[i] && b[i] || a[i] && !b[i];
+        bool sum = !(*first >> i) && *second >> i || *first >> i && !(*second >> i);
 
         if (even) {
             if (!sum) {
                 //inverse
-                a[i] = !a[i];
-                PS = !!(*b >> (bits - 1));
+                //a[i] = !a[i];
+                if (!(*first >> i & 1)) {
+                    *first = (1 << i) | *first;
+                }
+                else {
+                    *first = *first & (~(1 << i));
+                }
+
+                PS = !(*second > 0);
+
+                if (PS) {
+                    *first = (1 << (bits - 1) | *first);
+                }
             }
         }
         else {
             if (sum) {
                 //inverse
-                a[i] = !a[i];
-                PS = !!(*b >> (bits - 1));
+                if (!(*first >> i & 1)) {
+                    *first = (1 << i) | *first;
+                }
+                else {
+                    *first = *first & (~(1 << i));
+                }
+
+                PS = !(*second > 0);
+
+                if (PS) {
+                    *first = (1 << (bits - 1) | *first);
+                }
             }
         }
+
+
     }
 }
 
@@ -100,7 +127,7 @@ int main() {
             in >> a;
             print2(" inv ", a[1], a[4]);
             PC--;
-            inv(&a[1], &a[4]);
+            inv(a[1], a[4]);
             cin.get();
             print2(" inv ", a[1], a[4]);
             cin.get();
